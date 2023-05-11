@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 const app = express();
 const prompt = "Type stop to shutdown the server: ";
 const portNumber = 4000;
+let currRoomCode;
+let currPlayer;
 
 require("dotenv").config({ path: path.resolve("./.env") });
 const { MongoClient, ServerApiVersion } = require("mongodb");
@@ -55,7 +57,7 @@ app.get("/", (req, res) => {
     res.render("index", {});
 });
 
-app.get("/waiting_room", (req, res) => {
+app.get("/join_lobby", (req, res) => {
     res.render("joinLobby", {});
 }); 
 
@@ -65,6 +67,8 @@ app.get("/create_lobby", (req, res) => {
 
 app.post("/waiting_room_new", async (req, res) => {
     const newRoomCode = new Date().getTime().toString();
+    currRoomCode = newRoomCode;
+    currPlayer = req.body.playerName;
     
     try {
         await client.connect();
@@ -88,10 +92,30 @@ app.post("/waiting_room_existing", async (req, res) => {
         await client.connect();
         await joinLobby(client, db, collection, req.body.roomCode, req.body.playerName);
         let players = await getPlayerList(client, db, collection, req.body.roomCode);
+        currRoomCode = req.body.roomCode;
+        currPlayer = req.body.playerName;
 
         const vars = {
             playerName: req.body.playerName,
             roomCode: req.body.roomCode,
+            players: makePlayersTable(players)
+        };
+        res.render("waitingRoom", vars);
+    } catch(e) {
+        console.error(e);
+    } finally {
+        await client.close();
+    }
+});
+
+app.get("/waiting_room", async (req, res) => {
+    try {
+        await client.connect();
+        let players = await getPlayerList(client, db, collection, currRoomCode);
+
+        const vars = {
+            playerName: currPlayer,
+            roomCode: currRoomCode,
             players: makePlayersTable(players)
         };
         res.render("waitingRoom", vars);
