@@ -7,8 +7,10 @@
     <title>Word Assassin</title>
 </head>
 <body>
-    <h1>Welcome to Word Assassin</h1>
-    <a href="/waiting_room">Join a Game</a>
-    <a href="/create_lobby">Create Lobby</a>
+    <h1>Create a Lobby</h1>
+    <form action="http://localhost:4000/waiting_room_new" method="post">
+        Enter your name: <input name="playerName" type="text"><br><br>
+        <input type="submit" value="Create Lobby">
+    </form>
 </body>
 </html>
