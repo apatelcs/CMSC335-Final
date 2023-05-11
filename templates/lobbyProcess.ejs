@@ -7,10 +7,8 @@
     <title>Word Assassin</title>
 </head>
 <body>
-    <h1>Create a Lobby</h1>
-    <form action="http://localhost:4000/create_lobby_confirmation" method="post">
-        Enter your name: <input name="playerName" type="text"><br><br>
-        <input type="submit" value="Create Lobby">
-    </form>
+    <h1>Confirmation</h1>
+    You have successfully <%- word %> the room with the code <%- roomCode %>.<br><br>
+    <a href="/">Click here to go home</a>
 </body>
 </html>

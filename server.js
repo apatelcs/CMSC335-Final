@@ -5,7 +5,6 @@ const app = express();
 const prompt = "Type stop to shutdown the server: ";
 const portNumber = 4000;
 let currRoomCode;
-let currPlayer;
 
 require("dotenv").config({ path: path.resolve("./.env") });
 const { MongoClient, ServerApiVersion } = require("mongodb");
@@ -41,7 +40,7 @@ async function getPlayerList(client, db, collection, roomCode) {
 }
 
 function makePlayersTable(players) {
-    let outHTML = "<table border=\'1\'><tr><th>Player</th></tr>";
+    let outHTML = "<table border=\'1\'><tr><th>Players</th></tr>";
     players.forEach(player => {
         outHTML += `<tr><td>${player}</td></tr>`;
     });
@@ -65,21 +64,22 @@ app.get("/create_lobby", (req, res) => {
     res.render("createLobby", {});
 });
 
-app.post("/waiting_room_new", async (req, res) => {
+app.get("/goto_lobby", (req, res) => {
+    res.render("gotoLobby", {});
+});
+
+app.post("/create_lobby_confirmation", async (req, res) => {
     const newRoomCode = new Date().getTime().toString();
-    currRoomCode = newRoomCode;
-    currPlayer = req.body.playerName;
     
     try {
         await client.connect();
         await newLobby(client, db, collection, newRoomCode, req.body.playerName);
 
         const vars = {
-            playerName: req.body.playerName,
-            roomCode: newRoomCode,
-            players: makePlayersTable([req.body.playerName])
+            word: "created",
+            roomCode: newRoomCode
         };
-        res.render("waitingRoom", vars);
+        res.render("lobbyProcess", vars);
     } catch(e) {
         console.error(e);
     } finally {
@@ -87,20 +87,17 @@ app.post("/waiting_room_new", async (req, res) => {
     }
 });
 
-app.post("/waiting_room_existing", async (req, res) => {
+app.post("/join_lobby_confirmation", async (req, res) => {
     try {
         await client.connect();
         await joinLobby(client, db, collection, req.body.roomCode, req.body.playerName);
-        let players = await getPlayerList(client, db, collection, req.body.roomCode);
-        currRoomCode = req.body.roomCode;
-        currPlayer = req.body.playerName;
+        // let players = await getPlayerList(client, db, collection, req.body.roomCode);
 
         const vars = {
-            playerName: req.body.playerName,
-            roomCode: req.body.roomCode,
-            players: makePlayersTable(players)
+            word: "joined",
+            roomCode: req.body.roomCode
         };
-        res.render("waitingRoom", vars);
+        res.render("lobbyProcess", vars);
     } catch(e) {
         console.error(e);
     } finally {
@@ -108,14 +105,13 @@ app.post("/waiting_room_existing", async (req, res) => {
     }
 });
 
-app.get("/waiting_room", async (req, res) => {
+app.post("/waiting_room", async (req, res) => {
     try {
         await client.connect();
-        let players = await getPlayerList(client, db, collection, currRoomCode);
+        let players = await getPlayerList(client, db, collection, req.body.roomCode);
 
         const vars = {
-            playerName: currPlayer,
-            roomCode: currRoomCode,
+            roomCode: req.body.roomCode,
             players: makePlayersTable(players)
         };
         res.render("waitingRoom", vars);
