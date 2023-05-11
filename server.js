@@ -86,6 +86,28 @@ app.get("/search_player", (req, res) => {
     // TODO: USE API TO SEARCH PLAYER
     res.render("playerSearch", {});
 });
+
+app.post("/player_result", async (req, res) => {
+    const playerURL = `https://www.balldontlie.io/api/v1/players?search=${req.body.playerFirstName}_${req.body.playerLastName}`;
+    let result = await fetch(playerURL);
+    let json = await result.json();
+    const player = json.data[0];
+
+    const statsURL =  `https://www.balldontlie.io/api/v1/season_averages?player_ids[]=${player.id}`;
+    result = await fetch(statsURL);
+    json = await result.json();
+    const avgs = json.data[0];
+
+    let statsTable = getSeasonAverages(avgs);
+
+    const vars = {
+        playerName: player.first_name + " " + player.last_name,
+        team: player.team.full_name,
+        seasonStats: statsTable
+    };
+
+    res.render("playerResult", vars);
+});
 /* *************************************************** */
 
 /* *************** Express CLI *************** */
@@ -105,3 +127,21 @@ process.stdin.on('readable', () => {
     }
 });
 /* ******************************************* */
+
+/* *************** Utils *************** */
+function getSeasonAverages(apiAvgs) {
+    let formattedStats = {
+        Points: apiAvgs.pts,
+        Assists: apiAvgs.ast,
+        Rebounds: apiAvgs.reb,
+        Steals: apiAvgs.stl,
+        Blocks: apiAvgs.blk
+    };
+    let statsTable = "<table border=\'1\'><tr><th>Stat</th><th>Season Average</th></tr>";
+    Object.keys(formattedStats).forEach(k => {
+        statsTable += `<tr><td>${k}</td><td>${formattedStats[k]}</td></tr>`;
+    });
+    statsTable += "</table>";
+    return statsTable;
+}
+/* ************************************* */
