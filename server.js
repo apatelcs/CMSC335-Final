@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const app = express();
 const prompt = "Type stop to shutdown the server: ";
 const portNumber = 4000;
+let currUser;
 
 // Setup for MongoDB connection
 require("dotenv").config({ path: path.resolve("./.env") });
@@ -39,6 +40,22 @@ async function getUser(client, database, collection, username, password) {
     const result = await client.db(database).collection(collection).findOne(filter);
     return result;
 }
+
+async function getCurrUser(client, database, collection, username) {
+    let filter = { username: username };
+    const result = await client.db(database).collection(collection).findOne(filter);
+    return result;
+}
+
+async function updateFavPlayers(client, database, collection, username, playerFirst, playerLast) {
+    let filter = { username: username };
+    let newPlayer = {
+        firstName: playerFirst,
+        lastName: playerLast
+    };
+    let update = { $push: { favoritePlayers: newPlayer } };
+    await client.db(database).collection(collection).updateOne(filter, update);
+}
 /* ************************************************* */
 
 /* *************** Express & EJS Views *************** */
@@ -63,15 +80,33 @@ app.post("/home", async (req, res) => {
     let name = req.body.name
     let username = req.body.username;
     let password = req.body.password;
+    let pFirst = req.body.playerFirstName;
+    let pLast = req.body.playerLastName;
+    currUser = username ?? currUser;
 
     if (name) {
         await register(client, db, collection, name, username, password);
-        const vars = { user: req.body.name };
+        const vars = {
+            user: req.body.name,
+            favPlayers: JSON.stringify({})
+        };
 
         res.render("home", vars);
-    } else {
+    } else if (username && password) {
         const usr = await getUser(client, db, collection, username, password);
-        const vars = { user: usr.name };
+        const vars = {
+            user: usr.name,
+            favPlayers: JSON.stringify(usr.favoritePlayers)
+        };
+
+        res.render("home", vars);
+    } else if (pFirst && pLast) {
+        await updateFavPlayers(client, db, collection, currUser, pFirst, pLast);
+        const usr = await getCurrUser(client, db, collection, currUser);
+        const vars = {
+            user: usr.name,
+            favPlayers: JSON.stringify(usr.favoritePlayers)
+        };
 
         res.render("home", vars);
     }
@@ -83,7 +118,6 @@ app.get("/today_games", (req, res) => {
 });
 
 app.get("/search_player", (req, res) => {
-    // TODO: USE API TO SEARCH PLAYER
     res.render("playerSearch", {});
 });
 
