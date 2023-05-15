@@ -5,24 +5,37 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <link rel="stylesheet" href="/stylesheets/style.css"> 
+    <link rel="stylesheet" href="/stylesheets/login.css"> 
 
     <title>Login/Register</title>
 </head>
 <body>
+    <div id="content">
+        <div id="title">
+            <img src="/images/nelson.png" alt="Nelson dunking on some fool" width="150" height="150">
+            <strong id="ESP">ESP</strong><strong>Nelson</strong>
+        </div>
+        <br>
 
-    <form action="http://localhost:4000/home" method="post">
-        <div>
-            <input name="username" type="text" placeholder="Username">
-        </div>
-        <div>
-            <input name="password" type="password" placeholder="Password">
-        </div>
-        <div>
-            <input type="submit" value="Log In">
-        </div>
+        <h2>Login or Create a New Account</h2>
+        <form id="login" action="http://localhost:4000/home" method="post">
+            <div>
+                <input name="username" type="text" placeholder="Username">
+            </div>
+            <div>
+                <input name="password" type="password" placeholder="Password">
+            </div>
+            <div>
+                <input type="submit" value="Log In">
+            </div>
+        </form>
+
         <a href="/register">Register new account</a>
-    </form>
-
+        <div id="player-images">
+            <img src="/images/nelsonJames.png" width="250" height="200">
+            <img src="/images/nelsonCurry.png" width="250" height="200">
+            <img src="/images/nelsonAntek.png" width="250" height="200">
+        </div>
+    </div>
 </body>
 </html>

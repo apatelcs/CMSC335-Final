@@ -1,0 +1,32 @@
+
+html {
+    font-size: 14px;
+}
+
+#title{
+    display:flex;
+    justify-content: center;
+    font-size:5rem;
+    margin:auto;
+}
+
+#content{
+    max-width: 1000px;
+    margin:auto;
+    text-align:center;
+    border:0.25rem solid blue;
+}
+
+#ESP{
+    color:red;
+}
+
+#login{
+    display:flex;
+    justify-content: center;
+}
+
+#player-images{
+    display:flex;
+    justify-content: center;
+}
