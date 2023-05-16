@@ -9,14 +9,13 @@
 <body>
     <h1>Basketball Tracker</h1>
     <form action="http://localhost:4000/" method="post">
-        <a href="/today_games">Today's Games</a>
         <a href="/search_player">Player Stats</a>
         <input type="submit" value="Logout">
     </form>
 
     <div>
         Welcome to your page <%- user %>.<br>
-        <%- favPlayers %>
+        Your favorite players are: <%- favPlayers %>
     </div>
     <form action="http://localhost:4000/home" method="post">
         <div>

@@ -88,7 +88,7 @@ app.post("/home", async (req, res) => {
         await register(client, db, collection, name, username, password);
         const vars = {
             user: req.body.name,
-            favPlayers: JSON.stringify({})
+            favPlayers: []
         };
 
         res.render("home", vars);
@@ -96,7 +96,7 @@ app.post("/home", async (req, res) => {
         const usr = await getUser(client, db, collection, username, password);
         const vars = {
             user: usr.name,
-            favPlayers: JSON.stringify(usr.favoritePlayers)
+            favPlayers: dispPlayerNames(usr.favoritePlayers)
         };
 
         res.render("home", vars);
@@ -105,16 +105,11 @@ app.post("/home", async (req, res) => {
         const usr = await getCurrUser(client, db, collection, currUser);
         const vars = {
             user: usr.name,
-            favPlayers: JSON.stringify(usr.favoritePlayers)
+            favPlayers: dispPlayerNames(usr.favoritePlayers)
         };
 
         res.render("home", vars);
     }
-});
-
-app.get("/today_games", (req, res) => {
-    // TODO: USE API TO GET GAMES
-    res.render("games", {});
 });
 
 app.get("/search_player", (req, res) => {
@@ -177,5 +172,13 @@ function getSeasonAverages(apiAvgs) {
     });
     statsTable += "</table>";
     return statsTable;
+}
+
+function dispPlayerNames(players) {
+    outputList = []
+    players.forEach(player => {
+        outputList.push(`${player.firstName} ${player.lastName}`);
+    });
+    return outputList;
 }
 /* ************************************* */
