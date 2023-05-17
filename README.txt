@@ -1,5 +1,3 @@
-# CMSC335-Final
-
 Team Members:
 Abhay Patel, Kyle Truong
 
