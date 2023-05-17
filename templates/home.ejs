@@ -8,7 +8,7 @@
 </head>
 <body>
     <h1>Basketball Tracker</h1>
-    <form action="http://localhost:4000/" method="post">
+    <form action="/" method="post">
         <a href="/search_player">Player Stats</a>
         <input type="submit" value="Logout">
     </form>
@@ -17,7 +17,7 @@
         Welcome to your page <%- user %>.<br>
         Your favorite players are: <%- favPlayers %>
     </div>
-    <form action="http://localhost:4000/home" method="post">
+    <form action="/home" method="post">
         <div>
             <input name="playerFirstName" type="text" placeholder="Enter Player's First Name">
         </div>
